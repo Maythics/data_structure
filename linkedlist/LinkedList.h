@@ -1,6 +1,5 @@
 #include <initializer_list>
 #include <iostream>
-#include <stdexcept>
 
 template <typename T>
 class SingleLinkedList

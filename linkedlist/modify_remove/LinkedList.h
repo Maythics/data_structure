@@ -1,6 +1,5 @@
 #include <initializer_list>
 #include <iostream>
-#include <stdexcept>
 
 template <typename T>
 class SingleLinkedList
@@ -178,7 +177,6 @@ void SingleLinkedList<T>::_copy(const SingleLinkedList<T> &_l)
         p = p->next;
     }
 }
-
 
 
 ///////////////////////////////////HW////////////////////////////////////////////

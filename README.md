@@ -12,3 +12,6 @@
 
 请参见Chicken文件夹内的cpp文件以及Makefile
 
+## 作业3---linkedlist
+
+请参见该文件夹，其中modify_remove这个文件夹有修改remove为更加符合用户习惯的版本

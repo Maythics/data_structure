@@ -96,4 +96,7 @@ int main()
     b = d = c;    
     print(b);    
     print(d); // 测试【连续赋值】功能，本行与上一行能正确输出给 20 分return0;
+    c.setName(c.getName());
+    std::cout << "For fun"<< c.getName() 
+	    << std::endl;
 }

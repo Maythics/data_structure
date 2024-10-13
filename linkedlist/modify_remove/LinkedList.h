@@ -189,8 +189,9 @@ T SingleLinkedList<T>::getCurrentVal() const
     if(currentPos!=nullptr)
         return currentPos->data;
     else
-        throw std::runtime_error("Empty current position! Can't get value!");
-        ///直接抛出异常
+        std::cout<< "Empty current position! Can't get value!"<<std::endl;
+        exit(1);
+        ///直接退出
 }
 
 

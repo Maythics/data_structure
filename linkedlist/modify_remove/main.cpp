@@ -47,14 +47,9 @@ int main()
 
     c2.printList();
 
+    std::cout<< "here is my extra test"<< std::endl;
+    c2.find(1.5);
     c2.remove();
-    c2.printList();
-    std::cout<< "here is "<< std::endl;
-    bool find = c2.find(1.5);
-    std::cout<< find<< std::endl;
-    std::cout<< c2.getCurrentVal()<< std::endl;
-
-    //c2.remove();
 
     c2.printList();
     c2.remove();
@@ -65,6 +60,8 @@ int main()
     c2.printList();
     c2.remove();
     c2.printList();
+    c2.getCurrentVal();
+    c3.printList();
 
 
     //测试【删除】操作是否正确，每种情况6分

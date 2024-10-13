@@ -46,5 +46,6 @@ int main()
 
     c2.printList();
     //测试【删除】操作是否正确，每种情况6分
+
     return 0;
 }

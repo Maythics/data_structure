@@ -1,0 +1,148 @@
+\documentclass[UTF8]{ctexart}
+\usepackage{geometry, CJKutf8}
+\geometry{margin=1.5cm, vmargin={0pt,1cm}}
+\setlength{\topmargin}{-1cm}
+\setlength{\paperheight}{29.7cm}
+\setlength{\textheight}{25.3cm}
+
+% useful packages.
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{layout}
+\usepackage{listings}
+\usepackage{float, caption}
+
+\lstset{
+    basicstyle=\ttfamily, basewidth=0.5em
+}
+
+% some common command
+\newcommand{\dif}{\mathrm{d}}
+\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
+\newcommand{\difFrac}[2]{\frac{\dif #1}{\dif #2}}
+\newcommand{\pdfFrac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\OFL}{\mathrm{OFL}}
+\newcommand{\UFL}{\mathrm{UFL}}
+\newcommand{\fl}{\mathrm{fl}}
+\newcommand{\op}{\odot}
+\newcommand{\Eabs}{E_{\mathrm{abs}}}
+\newcommand{\Erel}{E_{\mathrm{rel}}}
+
+\begin{document}
+
+\pagestyle{fancy}
+\fancyhead{}
+\lhead{章翰宇 3220104133}
+\chead{数据结构与算法第四次作业}
+\rhead{Oct.18th, 2024}
+
+\section{测试程序的设计思路}
+
+
+
+\begin{enumerate}
+
+    \item 我首先创建了一个链表list1，测试一下默认的构造函数，即理应得到仅有head与tail，size为0的一个空链表。
+
+    \item  我再创建了一个list2，通过\texttt{List<int> list2 = {1, 2, 3, 4, 5};}这种赋值构造的方法，理应得到size为5的一个链表。
+
+    \item 我再用\texttt{List<int> list3(list2)}这种方法测试拷贝构造函数，应该得到一个和list2一样的深度拷贝。
+
+    \item 接着再看移动构造函数是否正确，首先用\texttt{std::move}把刚才的list2转化为右值，形参列表中接受右值引用的移动构造函数被调用。
+    移动后list2被接管，理应会被赋为空链表。
+
+    \item 接着测试接连赋值$a=b=c$，以及自我赋值$a=a$两种类型会不会导致错误。
+
+    \item \textbf{在非空链表中测试迭代器}，在此过程中，顺带测试\textbf{插入}。首先对空链表list1 push进一些元素，并打印出来，在打印的过程中也调用了begin与end，即让iterator进行了前置以及后置++以及--运算的测试（共四种），其中，由于--it的特殊性，在代码形式上稍有不对称的情况。
+
+    \item 测试在指定位置进行insert，\texttt{list1.insert(++list1.begin(), 25)}，意在第二个位置insert一个内容为25的结点。
+
+    \item 测试pop以及erase（对象\textbf{暂且都是非空的列表}）。看erase是否可在指定位置erase。
+
+    \item 测试clear清空列表，并且尝试clear以后再进行一次，验证对于空链表clear的效果。
+
+    \item 测试int之外的类别，比如string，简单验证仍然成立。
+
+\end{enumerate}
+
+\section{测试的结果}
+
+使用List.cpp中的代码测试（\textbf{最后一部分暂且注释掉}），结果一切正常。输出如下：
+
+\begin{verbatim}
+    List 1 size: 0
+    List 2 size: 5
+    List 3 size: 5
+    List 4 size: 5, List 2 size after move: 0
+    List 2's size becomes: 5 again
+    Now List2's elements are: 1 2 3 4 5
+    After list3=list3, list3's elements are: 1 2 3 4 5
+    Let's test push and pop
+    List1 is (by ++i): 30 20 10 -5
+    List1 is (by i++): 30 20 10 -5
+    inverse List1 is (by --i): -5 10 20 30
+    inverse List1 is (by i--): -5 10 20 30
+    List1 after insert: 30 25 20 10 -5
+    List1 after pop 1st element, then erase 2nd element and pop the last element: 25 10
+    List1 after erase the last element: 25
+    List1 size after clear: 0
+    List1's content now :
+    StringList 1 size: 0
+    StringList 2 size: 4
+    StringList 2 content: Hello this is Maythics
+    StringList 2 content: Hello this is Maythics ' homepage
+\end{verbatim}
+
+我用\texttt{ valgrind --leak-check=full  ./List} 进行测试，发现没有发生内存泄露。
+
+\section{bug报告}
+
+\subsection{问题}
+
+将List.cpp最后的部分解注释，再次测试，会出现段错误等问题。\
+
+bug1（对迭代器未限制++与- -范围）：\
+
+\begin{enumerate}
+    \item 构建一个空列表
+    \item 调用end获取迭代器iterator
+    \item 迭代器进行++操作，并且打印*iterator
+\end{enumerate}
+
+会出现段错误:
+\begin{verbatim}
+    After illegal move:
+    Segmentation fault
+\end{verbatim}
+
+原因是没有限制iterator的活动范围，应该在++与- -的函数处添加判断，使得iterator到达不了哨兵节点以外的地方（但是哨兵节点要允许到达，因为如循环打印出整个list的功能就需要iterator能够到达哨兵处比较）\
+
+
+bug2（erase一个空链表），触发如下：
+
+\begin{enumerate}
+    \item 构建一个空列表
+    \item 调用begin获取迭代器
+    \item 调用erase删除该迭代器所指位置
+\end{enumerate}
+
+会出现段错误:
+\begin{verbatim}
+   Try to erase an empty list:
+   Segmentation fault
+\end{verbatim}
+
+它出现的原因是：erase函数本身并未判断是否链表为空，如果真的为空，理应不做任何操作直接return，但是此时却尝试删除而出错。\
+
+\subsection{解决方案}
+
+将 \texttt{\#include "List.h" } 注释掉，并且改成\texttt{\#include "myList.h"}，即可解决问题。
+
+\end{document}
+

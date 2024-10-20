@@ -1,14 +1,25 @@
 #include <iostream>
-using namespace std;
+#include <string>
 
-const int Asize = 10;
+class Animal { // 基类
+public:
+    void speak() {
+        std::cout << "Animal speaks!" << std::endl;
+    }
+};
+
+class Dog : public Animal { // 派生类
+public:
+    void bark() {
+	
+        std::cout << "Dog barks!" << std::endl;
+    }
+};
 
 int main() {
-    char input[Asize];
-
-    cout << "Enter a line of text: ";
-    cin.get(input, Asize);
-    cout << "You entered: " << input << " AND THE LAST ONE IS "<< input[Asize-2] <<endl;
-
+    Dog myDog;
+    myDog.speak(); // 通过继承访问基类的成员
+    myDog.bark();  // 访问派生类自己的成员
     return 0;
 }
+

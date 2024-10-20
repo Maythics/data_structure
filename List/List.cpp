@@ -76,16 +76,24 @@ int main() {
     std::cout << std::endl;
 
 
-    // 测试const是否有效
+    // 测试const是否有效，包括const iterator的其各种operator
     const List<int> const_list={100,200,300};
     auto const_it = const_list.begin();
     std::cout <<"*const_it : " <<*const_it <<std::endl;
-    const_it = const_list.end();
+    const_it = const_list.begin();
+    std::cout <<"*Now const_it++ : " <<*const_it++ <<std::endl;
+    std::cout <<"*Now ++const_it : " <<*++const_it <<std::endl;
     std::cout <<"*Now --const_it : " <<*--const_it <<std::endl;
+    std::cout <<"*Now const_it-- : " <<*const_it-- <<std::endl;
+    auto const_it_copy = const_it;
+    std::cout <<"*Whether equal? : " << (const_it == const_it_copy) << std::endl;
+    std::cout <<"*Not equal? : " << (const_it != const_it_copy) << std::endl;
+
 
     // 测试插入指定位置
     list1.insert(++list1.begin(), 25);
-    list1.insert(list1.begin(), 10+1);
+    list1.insert(list1.insert(list1.begin(),600),temp); // 测试insert的返回值是否正确
+    list1.insert(list1.insert(list1.begin(), temp+1),temp*temp);
     std::cout << "List1 after insert: ";
     for (auto it = list1.begin(); it != list1.end(); ++it) {
         std::cout << *it << " ";
@@ -95,7 +103,7 @@ int main() {
     list1.pop_back();
     list1.pop_front();
     // 测试删除元素
-    list1.erase(++list1.begin()); // 应该删除25
+    list1.erase(++list1.begin()); // 应该删除第二个
     std::cout << "List1 after pop 1st element, then erase 2nd element and pop the last element: ";
     for (auto it = list1.begin(); it != list1.end(); ++it) {
         std::cout << *it << " ";
@@ -109,6 +117,16 @@ int main() {
     }
     std::cout << std::endl;
 
+    // 测试erase from to的功能，同时一并测试了erase from to的返回值
+    list1.erase(list1.erase(++list1.begin(),--(--list1.end())));
+    std::cout << "After erase from to, list1 is : ";
+    for (auto it = list1.begin(); it != list1.end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+    // 测试erase的返回值
+    auto after_erase = list1.erase(list1.begin());
+    std::cout << "After erase, the return iter points to: "<< *after_erase << std::endl;
 
     // 测试清空列表
     list1.clear();
@@ -127,6 +145,8 @@ int main() {
     //接下来测试string类别
     List<std::string> strlist1;
     std::cout << "StringList 1 size: " << strlist1.size() << std::endl;
+    strlist1.push_back("Back");
+    auto iter1 = strlist1.begin();
 
     List<std::string> strlist2 = {"Hello", "this", "is", "Maythics"};
     std::cout << "StringList 2 size: " << strlist2.size() << std::endl;
@@ -138,8 +158,8 @@ int main() {
     std::cout << std::endl;
 
     std::cout << "StringList 2 content: ";
-    auto iter = strlist2.end();
-    strlist2.insert(iter,"' homepage");
+    auto iter2 = strlist2.end();
+    strlist2.insert(iter2,"' homepage");
     for (auto it = strlist2.begin(); it != strlist2.end(); ++it) {
         std::cout << *it << " ";
         *it = "a";
@@ -150,6 +170,7 @@ int main() {
         std::cout << *it << " ";
     }
     std::cout << std::endl;
+
 
 // /////////////////////////////////////////////
 // /////////// BUG SECTION  ////////////////////

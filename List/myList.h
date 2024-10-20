@@ -640,7 +640,6 @@ public:
     iterator erase(iterator itr)
     {
 
-
         if (theSize ==0) exit(1);
 
         Node *p = itr.current;

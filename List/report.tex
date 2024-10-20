@@ -61,11 +61,11 @@
 
     \item \textbf{在非空链表中测试迭代器}，在此过程中，顺带测试\textbf{插入}。首先对空链表list1 push进一些元素，并打印出来，在打印的过程中也调用了begin与end，即让iterator进行了前置以及后置++以及--运算的测试（共四种），其中，由于--it的特殊性，在代码形式上稍有不对称的情况。
 
-    \item 测试const是否正确。
+    \item 测试const是否正确。顺带测试各种运算包括==与!=运算符
 
-    \item 测试在指定位置进行insert，\texttt{list1.insert(++list1.begin(), 25)}，意在第二个位置insert一个内容为25的结点。接着用\texttt{list1.insert(list1.begin(), 10+1);}这种方法来检查在传入右值时的插入是否正确。
+    \item 测试在指定位置进行insert，\texttt{list1.insert(list1.insert(list1.begin()),temp);}，意在验证insert的返回值是否正确。接着用\texttt{list1.insert(list1.begin(), 10+1);}套用这种方法来检查在传入右值时的插入是否正确。
 
-    \item 测试pop以及erase（对象\textbf{暂且都是非空的列表}）。看erase是否可在指定位置erase。
+    \item 测试pop以及erase（对象\textbf{暂且都是非空的列表}）。看erase是否可在指定位置erase，测试erase是否from to功能正常，并且返回值也是正确的，是否可以“套用”。
 
     \item 测试clear清空列表，并且尝试clear以后再进行一次，验证对于空链表clear的效果。
 
@@ -80,31 +80,38 @@
 使用List.cpp中的代码测试（\textbf{最后一部分暂且注释掉}），结果一切正常。输出如下：
 
 \begin{verbatim}
-List 1 size: 0 empty? 1
-List 2 size: 5
-List 3 size: 5
-List 4 size: 5, List 2 size after move: 0
-List 2's size becomes: 5 again
-Now List2's elements are: 1 2 3 4 5
-After list3=list3, list3's elements are: 1 2 3 4 5
-Let's test push and pop
-List1 front is : 30 back is : -5
-List1 is (by ++i): 30 20 10 -5
-List1 is (by i++): 30 20 10 -5
-inverse List1 is (by --i): -5 10 20 30
-inverse List1 is (by i--): -5 10 20 30
-*const_it : 100
-*Now --const_it : 300
-List1 after insert: 11 30 25 20 10 -5
-List1 after pop 1st element, then erase 2nd element and pop the last element: 30 20 10
-List1 after erase the last element: 30 20
-List1 size after clear: 0
-List1's content now :
-StringList 1 size: 0
-StringList 2 size: 4
-StringList 2 content: Hello this is Maythics
-StringList 2 content: Hello this is Maythics ' homepage
-a a a a a
+    List 1 size: 0 empty? 1
+    List 2 size: 5
+    List 3 size: 5
+    List 4 size: 5, List 2 size after move: 0
+    List 2's size becomes: 5 again
+    Now List2's elements are: 1 2 3 4 5
+    After list3=list3, list3's elements are: 1 2 3 4 5
+    Let's test push and pop
+    List1 front is : 30 back is : -5
+    List1 is (by ++i): 30 20 10 -5
+    List1 is (by i++): 30 20 10 -5
+    inverse List1 is (by --i): -5 10 20 30
+    inverse List1 is (by i--): -5 10 20 30
+    *const_it : 100
+    *Now const_it++ : 100
+    *Now ++const_it : 300
+    *Now --const_it : 200
+    *Now const_it-- : 200
+    *Whether equal? : 1
+    *Not equal? : 0
+    List1 after insert: 100 11 10 600 30 25 20 10 -5
+    List1 after pop 1st element, then erase 2nd element and pop the last element: 11 600 30 25 20 10
+    List1 after erase the last element: 11 600 30 25 20
+    After erase from to, list1 is : 11 20
+    After erase, the return iter points to: 20
+    List1 size after clear: 0
+    List1's content now :
+    StringList 1 size: 0
+    StringList 2 size: 4
+    StringList 2 content: Hello this is Maythics
+    StringList 2 content: Hello this is Maythics ' homepage
+    a a a a a
 \end{verbatim}
 
 我用\texttt{ valgrind --leak-check=full  ./List} 进行测试，发现没有发生内存泄露。

@@ -6,7 +6,7 @@
 int main() {
     // 测试默认构造函数
     List<int> list1;
-    std::cout << "List 1 size: " << list1.size() << std::endl;
+    std::cout << "List 1 size: " << list1.size() << " empty? "<< list1.empty() <<std::endl;
 
     // 测试初始化列表构造函数
     List<int> list2 = {1, 2, 3, 4, 5};
@@ -44,10 +44,12 @@ int main() {
     //////////////////////////////////////////////////
 
     // 测试插入和迭代器，前置++/--与后置++/--均测试
-    list1.push_back(10);
-    list1.push_back(-5);
+    int temp = 10;
+    list1.push_back(temp);
+    list1.push_back(-4-1);
     list1.push_front(20);
-    list1.push_front(30);
+    list1.push_front(20+10);
+    std::cout << "List1 front is : "<<list1.front() <<" back is : "<<list1.back() << std::endl;
     std::cout << "List1 is (by ++i): ";
     for (auto it = list1.begin(); it != list1.end(); ++it) {
         std::cout << *it << " ";
@@ -73,8 +75,17 @@ int main() {
     }
     std::cout << std::endl;
 
+
+    // 测试const是否有效
+    const List<int> const_list={100,200,300};
+    auto const_it = const_list.begin();
+    std::cout <<"*const_it : " <<*const_it <<std::endl;
+    const_it = const_list.end();
+    std::cout <<"*Now --const_it : " <<*--const_it <<std::endl;
+
     // 测试插入指定位置
     list1.insert(++list1.begin(), 25);
+    list1.insert(list1.begin(), 10+1);
     std::cout << "List1 after insert: ";
     for (auto it = list1.begin(); it != list1.end(); ++it) {
         std::cout << *it << " ";
@@ -129,6 +140,12 @@ int main() {
     std::cout << "StringList 2 content: ";
     auto iter = strlist2.end();
     strlist2.insert(iter,"' homepage");
+    for (auto it = strlist2.begin(); it != strlist2.end(); ++it) {
+        std::cout << *it << " ";
+        *it = "a";
+    }
+    std::cout << std::endl;
+
     for (auto it = strlist2.begin(); it != strlist2.end(); ++it) {
         std::cout << *it << " ";
     }

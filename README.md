@@ -14,8 +14,12 @@
 
 ## 作业3---linkedlist
 
-请参见该文件夹，其中modify_remove这个文件夹有修改remove为更加符合用户习惯的版本
+请参见该文件夹，其中modifyremove这个文件夹有修改remove为更加符合用户习惯的版本
 
 ## 作业4---List
 
 请参见该文件夹，其中myList.h有略微修改过的版本
+
+## 作业5---BST
+
+参见该文件夹，其中的可执行文件等仅仅作参考，实际只用看.cpp,.h,.tex以及makefile文件

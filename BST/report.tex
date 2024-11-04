@@ -177,7 +177,7 @@ Tree after removing 18:
 13
 14
 15
-Tree after making empty:
+Treeddddd after making empty:
 Empty tree
 Is tree empty? Yes
 Empty Tree after removing 7:
@@ -203,9 +203,11 @@ Move Assigned Tree (bst6):
 我用valgrind --leak-check=full ./test\_BST进行测试，发现没有发生内存泄露：\
 ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 
+以上输出，请参见测试remove程序的思路一节，我已经把生成的期望的树阐述了，由于测试代码中是“左中右”顺序打印的树，可以验证，和我设计思路中期望的相同，达到了效果。
+
 \section{异常测试报告}
 
-将最后一行代码解注释，即测试对一棵空树进行bst7.findMax();测试，将会触发throw UnderflowException\{ \}
+将最后一行代码解注释，即测试对一棵空树进行bst7.findMax();测试，将会触发throw UnderflowException\{ \}，输出的确会如此，产生1 error。
 
 \end{document}
 

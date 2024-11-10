@@ -1,0 +1,85 @@
+\documentclass[UTF8]{ctexart}
+\usepackage{geometry, CJKutf8}
+\geometry{margin=1.5cm, vmargin={0pt,1cm}}
+\setlength{\topmargin}{-1cm}
+\setlength{\paperheight}{29.7cm}
+\setlength{\textheight}{25.3cm}
+\setlength{\headheight}{13pt}
+
+% useful packages.
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{layout}
+\usepackage{listings}
+%\usepackage{courier}
+\usepackage{float, caption}
+
+\lstset{
+    basicstyle=\ttfamily, basewidth=0.5em
+}
+
+% some common command
+\newcommand{\dif}{\mathrm{d}}
+\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
+\newcommand{\difFrac}[2]{\frac{\dif #1}{\dif #2}}
+\newcommand{\pdfFrac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\OFL}{\mathrm{OFL}}
+\newcommand{\UFL}{\mathrm{UFL}}
+\newcommand{\fl}{\mathrm{fl}}
+\newcommand{\op}{\odot}
+\newcommand{\Eabs}{E_{\mathrm{abs}}}
+\newcommand{\Erel}{E_{\mathrm{rel}}}
+
+\begin{document}
+
+\pagestyle{fancy}
+\fancyhead{}
+\lhead{章翰宇 3220104133}
+\chead{数据结构与算法第六次作业}
+\rhead{Nov.10th, 2024}
+
+\section{remove函数实现的阐述}
+
+\begin{enumerate}
+  \item 首先，若对象是空树，则直接return。其次，若对象比当前节点小，则继续向左找，比当前大，向右找。找到对象后，如果该待删除对象只有一侧子树甚至没有子树，都很容易实现，按照原版代码即可（直接把子树接管权交给父辈，然后删除该节点即可）。我们只关心当待删除对象的左右子树均非空时的情况。
+
+  \item 此时，需要先把它的继任者找出来，这个找继任者的操作就在detachMin里完成。detachMin负责传回将继任者找到并且无痕地取出来，由于继任者要求是右子树的最小者，一路往左就行。找到继任者后，要将继任者从树上剥离下来，但继任者可能也有子辈，于是将其子辈接回断枝，即：继任者子辈和继任者父辈相接。此外，别忘了先找个指针盯着这个继任者（否则就弄丢了），该指针值也作为参数传出去，被remove函数中的变量接收。\
+
+  \item 现在remove函数拿到了剥离下来的继任者，只需要做善后工作：把删除对象的左枝右枝告诉继任者，把指向删除对象的指针改成指向继任者，然后把删除对象delete即可。\
+
+  \item 这些结束后，在\textbf{序关系}层面已经全对了，但是在树层面还不一定平衡，下面讨论如何使树平衡。\
+
+  \item 分析：由于仅删除了一个节点，而删除后，将会由其右子树的最小元素来替补它。显然，修改后的树的节点里，height参数需要变更的那些节点，必仅存在于被删除节点以下。CASE1：继任者没有子节点，此时，仅需继任者改变height参数；CASE2：继任者有子节点，根据继任者的定义，仅有右子树，而右子树是作为一个整体接到继任者本来的父辈身上的，因此，右子树中的所有节点的height参数无需改变，只用考察继任者本身开始往上，那些height参数需改变，因此，在detachMin递归的途中，调用balance即可。\
+
+  \item 在remove函数处调用balance函数，传入的参数是当前节点的指针引用，目的是把remove后的该层进行balance，因为该层以下的balance问题，已经在detachMin函数中解决了。\
+
+\end{enumerate}
+
+\section{代码测试}
+
+测试环境：12th Gen Intel(R) Core(TM) i5-12500H   2.50 GHz，在WSL中进行测试
+
+首先需要\textbf{接除限制}：ulimit -s unlimited
+
+可以直接执行make run：（即沿袭上次作业，执行g++ test.cpp -o test -O2以及time ./test）
+
+也可以分开执行，然后time ./test的输出如下（省略前面打印树的很长的输出）：
+\begin{verbatim}
+  ------------------------------
+  Empty tree
+
+  real    0m0.942s
+  user    0m0.932s
+  sys     0m0.010s
+\end{verbatim}
+
+我用valgrind --leak-check=full ./test进行测试，发现没有发生内存泄露。
+
+\end{document}
+

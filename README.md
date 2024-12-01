@@ -27,3 +27,7 @@
 ## 作业6---AVL
 
 参见该AVL文件夹，其中的BST.h已经和上次作业不同（虽然重名），文件夹中包含了report.tex以及test.cpp文件
+
+## 作业7---HeapSort
+
+参见该文件夹，包含四个关键文件test.cpp HeapSort.h Makefile report.tex

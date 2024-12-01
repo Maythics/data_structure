@@ -1,0 +1,146 @@
+\documentclass[UTF8]{ctexart}
+\usepackage{geometry, CJKutf8}
+\geometry{margin=1.5cm, vmargin={0pt,1cm}}
+\setlength{\topmargin}{-1cm}
+\setlength{\paperheight}{29.7cm}
+\setlength{\textheight}{25.3cm}
+\setlength{\headheight}{13pt}
+
+% useful packages.
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{layout}
+\usepackage{listings}
+%\usepackage{courier}
+\usepackage{float, caption}
+
+\lstset{
+    basicstyle=\ttfamily, basewidth=0.5em
+}
+
+% some common command
+\newcommand{\dif}{\mathrm{d}}
+\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
+\newcommand{\difFrac}[2]{\frac{\dif #1}{\dif #2}}
+\newcommand{\pdfFrac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\OFL}{\mathrm{OFL}}
+\newcommand{\UFL}{\mathrm{UFL}}
+\newcommand{\fl}{\mathrm{fl}}
+\newcommand{\op}{\odot}
+\newcommand{\Eabs}{E_{\mathrm{abs}}}
+\newcommand{\Erel}{E_{\mathrm{rel}}}
+
+\begin{document}
+
+\pagestyle{fancy}
+\fancyhead{}
+\lhead{章翰宇 3220104133}
+\chead{数据结构与算法第12周作业}
+\rhead{Dec.01st, 2024}
+
+\section{程序设计思路}
+
+
+
+对于一个最大堆（最大的元素在根部的）而言，可以通过依次弹射最大元的方法，实现排序，因此总体思路为，每一次都将最大元弹射出去排序，然后将剩下的数据重新调整成堆即可。
+
+下面讨论细节：弹射操作非常容易，因为对于一个最大堆而言，其根节点就是最大元，至于如何将剩下的数据重新变成堆需要着重处理。可以先将数组末尾的元素安置到堆的根部去，但是这并不是堆（因为不符合堆序性），所以通过“下滤”操作，如果这个元素比其孩子还小，那么就与孩子进行交换，就好像“下沉”一样，如此不断与孩子比较，直到下不去为止。
+
+流程：
+\begin{enumerate}
+  \item 弹出最大元，最末位补充，即两者进行swap。（因为最大的元素，进行递增排序后恰会排在末尾）
+
+  \item 调用Downward\_sift函数把剩余的数据变成一个正确的堆，由于排除根节点外的元素，都已符合堆序性，因此仅需跟踪该根节点的下沉过程。
+
+  \item 再次重复前两步操作。
+
+\end{enumerate}
+
+
+\section{测试思路}
+
+其中check函数只需要对比使用标准库的方法和使用我自己的方法，生成的两个vector是否一致即可，可传入引用以避免复制。
+
+\begin{enumerate}
+
+  \item 长度1500000的随机序列
+  \item 长度1500000的增序序列
+  \item 长度1500000的降序序列
+  \item 长度1500000的部分元素重复序列（只需要限制随机数产生的范围，自动就能得到含重复的元素的随机序列）
+
+\end{enumerate}
+
+在测试时使用chrono进行计时，执行前后的时间作差，使用print\_result函数打印出时间，包括check的结果即可。
+
+\section{测试效果}
+
+可直接使用make run 命令编译且运行。
+
+输出形如：
+\begin{verbatim}
+  **Random Input**
+  sort_heap: 0.157933
+  my_sort: 0.15796
+  check result: 1
+ **Increasing Input**
+  sort_heap: 0.063219
+  my_sort: 0.0688413
+  check result: 1
+ **Decreasing Input**
+  sort_heap: 0.0810255
+  my_sort: 0.0808056
+  check result: 1
+ **Random with Repeat Input**
+  sort_heap: 0.152754
+  my_sort: 0.157996
+  check result: 1
+\end{verbatim}
+
+在未加入-O2优化时，如下（单位：second）：
+
+\begin{table}[H]
+  \begin{center}
+  \caption{运行时间对比}
+  \begin{tabular}{l|l|l}
+  \label{table1}
+  \textbf{输入序列} & \textbf{my\_sort time} & \textbf{std::sort\_heap time}\\
+  \hline
+  随机 & 0.733434 & 1.02845\\
+  递增 & 0.53948 & 0.851013\\
+  递减 & 0.542546 & 0.865929\\
+  随机（含重复） & 0.716736 & 1.0294
+  \end{tabular}
+  \end{center}
+\end{table}
+
+在编译时加入-O2进行优化后，如下（单位：second）：
+
+\begin{table}[H]
+  \begin{center}
+  \caption{运行时间对比(-O2)}
+  \begin{tabular}{l|l|l}
+  \textbf{输入序列} & \textbf{my\_sort time} & \textbf{std::sort\_heap time}\\
+  \hline
+  随机 & 0.1622 & 0.161694 \\
+  递增 & 0.076275 & 0.0677776 \\
+  递减 & 0.0800664 & 0.0843663 \\
+  随机（含重复） & 0.160439 & 0.156313
+  \end{tabular}
+  \end{center}
+\end{table}
+
+用valgrind --leak-check=full ./test进行测试，发现没有发生内存泄露 \
+
+\section{时间复杂度分析}
+
+由于每一次弹出最大元是$\Theta(1)$的，而耗时的主要是“向下过滤”的过程，由于最糟糕的情况是向下过滤到底，即树高$h$那么多。而共操作$N$次，因此为$\Theta(N \log N)$
+
+实际上这和标准库的方法一样，因此时间复杂度一致。但，由于我写的my\_sort函数要求输入必须\textbf{已经是个堆了，不会进行检查}，而std::sort\_heap函数则会首先进行检查，如果不是堆会先建堆。这导致在“检查阶段”耗时，所以可见在表格\ref{table1}无O2优化时，我的函数在各种情况下都更快0.3秒左右，有理由猜测是检查的耗时。
+
+\end{document}

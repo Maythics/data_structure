@@ -31,3 +31,7 @@
 ## 作业7---HeapSort
 
 参见该文件夹，包含四个关键文件test.cpp HeapSort.h Makefile report.tex
+
+## 项目作业---Cuckoo Hash
+
+参见该文件夹，./reference目录下是参考的课本代码

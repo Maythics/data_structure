@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <cstdlib>
+#include <chrono>
 
 using namespace std;
 
@@ -17,16 +17,16 @@ string generateRandomString(int length) {
     return str;
 }
 
-// 测试String类的哈希值计算
-void HashCalculation(string elem,int count) {
-    StringHashFamily hashFamily(count);  // 定义 count 个哈希函数
-    cout << "Hashing '" << elem << "' with hash functions:" << endl;
-    for (int i = 0; i < count; ++i) {
-        cout << "Hash of '" << elem << "' using function " << i << " (multiplier " << i << "): "
-             << hashFamily.hash(elem, i) << endl;
-    }
-    hashFamily.printMultipliers();
-}
+// // 测试String类的哈希值计算（用这个函数可以仔细看string的哈希算法，在主程序中未演示）
+// void HashCalculation(string elem,int count) {
+//     StringHashFamily hashFamily(count);  // 定义 count 个哈希函数
+//     cout << "Hashing '" << elem << "' with hash functions:" << endl;
+//     for (int i = 0; i < count; ++i) {
+//         cout << "Hash of '" << elem << "' using function " << i << " (multiplier " << i << "): "
+//              << hashFamily.hash(elem, i) << endl;
+//     }
+//     hashFamily.printMultipliers();
+// }
 
 void test_stringHash()
 {
@@ -40,7 +40,7 @@ void test_stringHash()
     Table1.insert(str, true); /// debug=true，可视化步骤细节
     Table1.print_Table();
     int same = 0;
-    for(int i=0;i<12;i++)
+    for(int i=0;i<10;i++)
     {
         bool fail = Table1.insert(generateRandomString(5),true);/// debug=true，可视化步骤细节
         if (fail == false)
@@ -73,16 +73,15 @@ void test_intHash()
     Table2.insert(104133,true); /// debug=true，可视化步骤细节
     Table2.print_Table();
     int same = 0;
-    for(int i=1;i<12;i++)
+    for(int i=0;i<10;i++)
     {
-        ///  随机生成1000000以内的整数
-        bool fail = Table2.insert(abs(rand())%1000000,true); /// debug=true，可视化步骤细节
+        ///  随机生成100000以内的整数
+        bool fail = Table2.insert(abs(rand())%100000,true); /// debug=true，可视化步骤细节
         if (fail == false)
             same ++;
         Table2.print_Table();
         Table2.print_TableSize();
         Table2.print_currentSize();
-
     }
     cout<<"contain 104133? " << Table2.contains(104133)<< endl;
     Table2.remove(104133);
@@ -96,10 +95,47 @@ void test_intHash()
 ////////////////////////////////////// INT HASH TEST ////////////////////////////////->end
 
 
+//////////////////////////////////// EFFICIENCY TEST /////////////////////////////////////
+
+void efficiency_helper(int tablesize,int function_number)
+{
+    HashTable<int,IntHashFamily> Table3(tablesize,function_number);
+    Table3.print_TableSize();
+    int same =0;
+    auto start = std::chrono::high_resolution_clock::now();
+    for(int i=0;i<tablesize/2;i++)
+    {
+        ///  随机生成50倍tablesize以内的整数
+        bool fail = Table3.insert(abs(rand())%(50*tablesize),false); /// debug=false，关闭步骤可视化
+        if (fail == false)
+            same ++;
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end-start;
+    Table3.print_TableSize();
+    Table3.print_currentSize();
+    cout << "same is "<< same << endl;
+    cout << "TIME COST " <<  duration.count() << "\n" << endl;
+}
+
+void test_efficiency()
+{
+    cout<< "****************************************"<< "\n";
+    cout<< "************ TEST EFFICIENCY ***********"<< "\n";
+    cout<< "****************************************"<< "\n" << endl;
+
+    for(int j =1;j<10;j++)
+    {
+      efficiency_helper(j*10000000,3);
+    }
+}
+//////////////////////////////////// EFFICIENCY TEST ////////////////////////////////->end
+
 
 int main()
 {
     test_stringHash();
     test_intHash();
+    test_efficiency();
     return 0;
 }

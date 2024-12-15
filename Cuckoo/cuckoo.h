@@ -170,17 +170,17 @@ class HashTable
       cout << endl;
     }
 
-    void print_TableSize()
+    void print_TableSize() /// 打印表的大小
     {
       cout<< "Table Size is "<< TableSize << endl;
     }
 
-    void print_currentSize()
+    void print_currentSize() /// 打印目前存储数据的大小
     {
       cout<< "current elemment size is "<< currentSize << endl;
     }
 
-    void print_Functions()
+    void print_Functions() /// 打印出现在的hash函数（几个乘子）
     {
       hashFunctions.printMultipliers();
     }
@@ -191,14 +191,11 @@ class HashTable
       return find_element_pos(x) != -1;
     }
 
-    bool insert(Datatype & x, bool debug = false)  /// 将一个数据类型为Datatype的元素x加入到表中，debug是调试用的参数，默认为false，即不打印任何结果到终端中，若为true，将会打印详细步骤
+    bool insert(Datatype & x, bool debug = false)  /// 将一个数据类型为Datatype的元素x加入到表中，debug是调试用的参数，默认为false，即不打印任何结果到终端中，若为true，将会打印insert的详细步骤
     {
       /// 如果有x元素了，直接返回false，不允许有重复元素
       if( contains(x) )
         return false;
-
-      // if( currentSize >= array.size( ) * MAX_LOAD )
-      //   expand( );
 
       /// 调用private的函数insert_element完成任务
       return insert_element(x, debug);
@@ -319,7 +316,7 @@ class HashTable
           }
         }
         /// 否则，没有一个位置是ok的，那就开始驱逐旧元素的操作
-        /// 任意选择一个老人踢出去
+        /// 任意选择一个老人踢出去，是坐在第kick_off个位置上的那个
         int kick_off = rand() % numHashFunctions;
         int final_pos = find_position(x ,kick_off);
         /// 采用swap的策略，现在x就获得了被踢出来的元素，他将继续寻找下家

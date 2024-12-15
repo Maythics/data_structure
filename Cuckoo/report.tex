@@ -6,6 +6,8 @@
 \setlength{\textheight}{25.3cm}
 \setlength{\headheight}{13pt}
 
+\usepackage{pgfplots}
+
 % useful packages.
 \usepackage{amsfonts}
 \usepackage{amsmath}
@@ -66,18 +68,17 @@
 
 3. 与课本代码不同，调整了哈希函数的生成规则
 
-4. 增加了打印哈希函数、打印哈希表的public函数，便于可视化结果与debug
-
+4. 增加了打印哈希映射、哈希表的public函数，便于可视化结果与debug
 
 \section{测试思路}
 
-基本功能正确与否：测试两种类型（字符串和整型）分别作为基本元素时，哈希表是否工作正常，首先是两个含有可视化的函数，会显示出此次的哈希函数是哪些，也会在每一步都打印出此时的表的大小、此时存有的元素的个数，也会打出整张表。此外，也会在触发布谷鸟踢除时，显示出“kick”了哪个元素，在触发rehash时会打印“rehash”，方便检查。也测试了remove函数以及contain函数的正确实现。
+\subsection{基本功能正确与否}
 
-效率考察：
+测试两种类型（字符串和整型）分别作为基本元素时，哈希表是否工作正常，首先是两个含有可视化的函数，会显示出此次的哈希函数是哪些，也会在每一步都打印出此时的表的大小、此时存有的元素的个数，也会打出整张表。此外，也会在触发布谷鸟踢除时，显示出“kick”了哪个元素，在触发rehash时会打印“rehash”，方便检查。也测试了remove函数以及contain函数的正确实现。
 
-在测试时使用chrono进行计时，执行前后的时间作差，使用print\_result函数打印出时间，包括check的结果即可。
+\subsection{效率考察}
 
-注意，这里的计时统一用\textbf{建堆后开始到排序结束}的时间。
+在测试时使用chrono进行计时，前后的时间作差。效率测试，就关闭debug模式（不会输出每一步的步骤）。此外，对于每一次测试时，输入数据的长度都比表格的\textbf{初始大小}的一半小，这样保证了装载率小于0.5。而且，我设置填入数据的范围也和初始表格的大小成正比，这样的话，由于数据重复而填入失败的比例将会接近。
 
 \section{测试效果}
 
@@ -85,63 +86,206 @@
 
 输出形如：
 \begin{verbatim}
-  **Random Input**
-  sort_heap: 0.157933
-  my_sort: 0.15796
-  check result: 1
- **Increasing Input**
-  sort_heap: 0.063219
-  my_sort: 0.0688413
-  check result: 1
- **Decreasing Input**
-  sort_heap: 0.0810255
-  my_sort: 0.0808056
-  check result: 1
- **Random with Repeat Input**
-  sort_heap: 0.152754
-  my_sort: 0.157996
-  check result: 1
+  ****************************************
+  ************* TEST STRING **************
+  ****************************************
+
+  Multipliers: 47 53 59
+          hello
+          hello                   APQkj
+  Table Size is 5
+  current elemment size is 2
+          hello           LFaTy   APQkj
+  Table Size is 5
+  current elemment size is 3
+          hello   nrXMU   LFaTy   APQkj
+  Table Size is 5
+  current elemment size is 4
+  YJQNf   hello   nrXMU   LFaTy   APQkj
+  Table Size is 5
+  current elemment size is 5
+  <<<<<<<<<<<< kick!!!<<< hello <<<<<
+  <<<<<<<<<<<< kick!!!<<< APQkj <<<<<
+  ############# rehash trigger #############
+  LFaTy   ypoZR   APQkj   nrXMU   hello                                   YJQNf
+  Table Size is 11
+  current elemment size is 6
+  LFaTy   ypoZR   APQkj   nrXMU   hello                           WVpxm   YJQNf
+  Table Size is 11
+  current elemment size is 7
+  LFaTy   ypoZR   APQkj   nrXMU   hello                           WVpxm   YJQNf   fHvsm
+  Table Size is 11
+  current elemment size is 8
+  LFaTy   ypoZR   APQkj   nrXMU   hello   vOnkf                   WVpxm   YJQNf   fHvsm
+  Table Size is 11
+  current elemment size is 9
+  LFaTy   ypoZR   APQkj   nrXMU   hello   vOnkf           MzZKi   WVpxm   YJQNf   fHvsm
+  Table Size is 11
+  current elemment size is 10
+  <<<<<<<<<<<< kick!!!<<< fHvsm <<<<<
+  <<<<<<<<<<<< kick!!!<<< ypoZR <<<<<
+  LFaTy   fHvsm   APQkj   nrXMU   hello   vOnkf   ypoZR   MzZKi   WVpxm   YJQNf   rxorM
+  Table Size is 11
+  current elemment size is 11
+  contain hello? 1
+  LFaTy   fHvsm   APQkj   nrXMU           vOnkf   ypoZR   MzZKi   WVpxm   YJQNf   rxorM
+  current elemment size is 10
+  contain hello? 0
+  same is 0
+  ****************************************
+  *************** TEST INT ***************
+  ****************************************
+
+  Multipliers: 457 509 563
+
+          104133
+          104133          39294
+  Table Size is 5
+  current elemment size is 2
+          104133  31681   39294
+  Table Size is 5
+  current elemment size is 3
+  13690   104133  31681   39294
+  Table Size is 5
+  current elemment size is 4
+  13690   104133  31681   39294   58338
+  Table Size is 5
+  current elemment size is 5
+  <<<<<<<<<<<< kick!!!<<< 58338 <<<<<
+  <<<<<<<<<<<< kick!!!<<< 45813 <<<<<
+  ############# rehash trigger #############
+          104133                  13690   39294   45813   58338   31681
+  Table Size is 11
+  current elemment size is 6
+  31493   104133                  13690   39294   45813   58338   31681
+  Table Size is 11
+  current elemment size is 7
+  31493   104133                  13690   39294   45813   58338   31681           67324
+  Table Size is 11
+  current elemment size is 8
+  31493   104133          81245   13690   39294   45813   58338   31681           67324
+  Table Size is 11
+  current elemment size is 9
+  <<<<<<<<<<<< kick!!!<<< 58338 <<<<<
+  <<<<<<<<<<<< kick!!!<<< 67324 <<<<<
+  <<<<<<<<<<<< kick!!!<<< 58338 <<<<<
+  ############# rehash trigger #############
+  <<<<<<<<<<<< kick!!!<<< 39294 <<<<<
+  <<<<<<<<<<<< kick!!!<<< 104133 <<<<<
+          104133                          67324                           58338   31493                           31681   81245   13690   82429   45813       39294
+  Table Size is 23
+  current elemment size is 10
+          104133          23103           67324                           58338   31493                           31681   81245   13690   82429   45813       39294
+  Table Size is 23
+  current elemment size is 11
+  contain 104133? 1
+                          23103           67324                           58338   31493                           31681   81245   13690   82429   45813       39294
+  current elemment size is 10
+  contain 104133? 0
+  same is 0
+  ****************************************
+  ************ TEST EFFICIENCY ***********
+  ****************************************
+
+  Table Size is 10000000
+  Table Size is 10000000
+  current elemment size is 4974826
+  same is 25174
+  TIME COST 0.481045
+
+  Table Size is 20000000
+  Table Size is 20000000
+  current elemment size is 9948910
+  same is 51090
+  TIME COST 1.12801
+
+  Table Size is 30000000
+  Table Size is 30000000
+  current elemment size is 14916206
+  same is 83794
+  TIME COST 1.45952
+
+  Table Size is 40000000
+  Table Size is 40000000
+  current elemment size is 19894969
+  same is 105031
+  TIME COST 1.7675
+
+  Table Size is 50000000
+  Table Size is 50000000
+  current elemment size is 24807594
+  same is 192406
+  TIME COST 2.20335
+
+  Table Size is 60000000
+  Table Size is 60000000
+  current elemment size is 29627171
+  same is 372829
+  TIME COST 2.58583
+
+  Table Size is 70000000
+  Table Size is 70000000
+  current elemment size is 34218790
+  same is 781210
+  TIME COST 3.00016
+
+  Table Size is 80000000
+  Table Size is 80000000
+  current elemment size is 37396700
+  same is 2603300
+  TIME COST 3.33996
+
+  Table Size is 90000000
+  Table Size is 90000000
+  current elemment size is 40393100
+  same is 4606900
+  TIME COST 3.68048
 \end{verbatim}
 
-在未加入-O2优化时，如下（单位：second）：
+上述结果已经加入-O2优化，如下（单位：second）：
 
 \begin{table}[H]
   \begin{center}
   \caption{运行时间对比}
-  \begin{tabular}{l|l|l}
+  \begin{tabular}{c|c|c}
   \label{table1}
-  \textbf{输入序列} & \textbf{my\_sort time} & \textbf{std::sort\_heap time}\\
+  \textbf{序号} & \textbf{大小} & \textbf{运行时间(second)}\\
   \hline
-  随机 & 0.733434 & 1.02845\\
-  递增 & 0.53948 & 0.851013\\
-  递减 & 0.542546 & 0.865929\\
-  随机（含重复） & 0.716736 & 1.0294
+  1 & 10000000 & 0.481045\\
+  2 & 20000000 & 1.12801\\
+  3 & 30000000 & 1.45952\\
+  4 & 40000000 & 1.7675 \\
+  5 & 10000000 & 2.20335\\
+  6 & 20000000 & 2.58583\\
+  7 & 30000000 & 3.00016\\
+  8 & 40000000 & 3.33996 \\
+  9 & 90000000 & 3.68048
   \end{tabular}
   \end{center}
 \end{table}
 
-在编译时加入-O2进行优化后，如下（单位：second）：
-
-\begin{table}[H]
-  \begin{center}
-  \caption{运行时间对比(-O2)}
-  \begin{tabular}{l|l|l}
-  \textbf{输入序列} & \textbf{my\_sort time} & \textbf{std::sort\_heap time}\\
-  \hline
-  随机 & 0.1622 & 0.161694 \\
-  递增 & 0.076275 & 0.0677776 \\
-  递减 & 0.0800664 & 0.0843663 \\
-  随机（含重复） & 0.160439 & 0.156313
-  \end{tabular}
-  \end{center}
-\end{table}
+\begin{center}
+\begin{tikzpicture}
+  \begin{axis}
+  \addplot coordinates {
+  (1,0.481045)
+  (2,1.12801)
+  (3,1.45952)
+  (4,1.7675)
+  (5,2.20335)
+  (6,2.58583)
+  (7,3.00016)
+  (8,3.33996)
+  (9,3.68048)
+  };
+  \end{axis}
+\end{tikzpicture}
+\end{center}
 
 用valgrind --leak-check=full ./test进行测试，发现没有发生内存泄露 \
 
 \section{时间复杂度分析}
 
-由于每一次弹出最大元是$\Theta(1)$的，而耗时的主要是“向下过滤”的过程，由于最糟糕的情况是向下过滤到底，即树高$h$那么多。而共操作$N$次，因此为$\Theta(N \log N)$
-
-实际上这和标准库的方法一样，因此时间复杂度一致。但，由于我写的my\_sort函数要求输入必须\textbf{已经是个堆了，不会进行检查}，而std::sort\_heap函数则会首先进行检查，如果不是堆会先建堆。这导致在“检查阶段”耗时，所以可见在表格\ref{table1}无O2优化时，我的函数在各种情况下都更快0.3秒左右，有理由猜测是检查的耗时。
+根据上面的测试，仅仅从运行耗费时间的角度，能够验证总的时间复杂度是$\Theta(n)$这一点（即每一步都是$O(1)$的），基本上每增加10000000个插入的数据，就会增加0.4秒左右的耗时。
 
 \end{document}
